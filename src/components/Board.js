@@ -1,28 +1,32 @@
 import React, { Component } from 'react'
-import  {getColumns}  from "./services/InfoServices"
+import  {getColumns}  from "./services/TrelloServices"
 import Column from './Column';
+import AddColumn from './AddColumn';
 
 class Board extends Component {
-  constructor(){
-    super()
-    this.state = {
+ 
+  state = {
       columns: []
     }
+  
+  fetchColumns = () => {
+    getColumns()
+      .then(columns => this.setState({ columns }))
   }
   componentDidMount = () => {
-    getColumns()
-      .then(response => this.setState({ columns: response }))
+    this.fetchColumns()
   }
   
   render() {
-    const columns = this.state.columns.map((column, index) => 
-      <Column {...column} key={index}/>
+    const columns = this.state.columns.map((column) => 
+      <Column {...column} key={column.id} fetchColumns={this.fetchColumns}/>
     )
     return(
       <div className="section">
         <div className="container-fluid">
           <div className="row">
             {columns}
+          <AddColumn nextPosition={this.state.columns.length} fetchColumns={this.fetchColumns}/>
           </div>
         </div>
       </div>
